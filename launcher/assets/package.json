@@ -1,0 +1,16 @@
+{
+  "name": "assets",
+  "version": "1.0.0",
+  "description": "Pon los archivos en esta carpeta con **estos nombres exactos**\r (o dime si quieres otros nombres).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "sharp": "^0.35.5"
+  }
+}

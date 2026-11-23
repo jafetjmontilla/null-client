@@ -1,0 +1,25 @@
+# Dependencias
+node_modules/
+
+# Sistema
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+Untitled
+
+# Secretos / entorno
+.env
+.env.*
+*.pem
+credentials.json
+
+# Logs / temporales
+*.log
+npm-debug.log*
+logo-preview.png
+logo-preview-dark.png

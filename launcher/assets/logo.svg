@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Null Client logo — silueta vectorial, fondo transparente -->
+  <defs>
+    <!-- Agujero central limpio -->
+    <mask id="keepRingHole">
+      <rect x="0" y="0" width="1024" height="1024" fill="#ffffff"/>
+      <circle cx="512" cy="512" r="152" fill="#000000"/>
+    </mask>
+  </defs>
+
+  <g mask="url(#keepRingHole)">
+    <g transform="translate(512 512) rotate(-34)" fill="#000000">
+      <!-- Cuerpo circular (anillo) -->
+      <path
+        fill-rule="evenodd"
+        d="
+          M 0 -318
+          A 318 318 0 1 1 0 318
+          A 318 318 0 1 1 0 -318
+          Z
+          M 0 -152
+          A 152 152 0 1 0 0 152
+          A 152 152 0 1 0 0 -152
+          Z
+        "
+      />
+
+      <!-- Anillo / disco diagonal (más grueso abajo-izq, punta arriba-der) -->
+      <path
+        d="
+          M -455 70
+          C -445 125, -380 155, -300 148
+          C -180 138, -40 95, 90 40
+          C 200 -5, 310 -55, 390 -95
+          C 430 -115, 465 -125, 485 -105
+          C 505 -85, 498 -55, 470 -35
+          C 400 10, 300 55, 180 95
+          C 60 135, -70 165, -200 175
+          C -300 182, -390 165, -445 120
+          C -470 100, -468 80, -455 70
+          Z
+        "
+      />
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,75 @@
+/* ============================================
+   EJERCICIO 8 — CSS básico del launcher
+   ============================================
+   Guía: ../06-css-basico.md
+   Abre 08-launcher.html en el navegador
+*/
+
+/* TODO 3: Estilo del body
+   - fondo oscuro (ej: #121212)
+   - texto claro (ej: #f0f0f0)
+   - fuente Arial
+   - text-align: center
+*/
+body {
+   background-color: rgb(255, 0, 0);
+   color: #f0f0f0;
+   font-family: Arial;
+   text-align: center;
+}
+
+/* TODO 4: Estilo de la tarjeta (.tarjeta)
+   - fondo un poco más claro que el body (ej: #1e1e1e)
+   - padding: 24px
+   - border-radius: 12px
+   - margin-top: 80px
+   - display: inline-block  (para que no ocupe todo el ancho)
+*/
+.tarjeta {
+   background-color: #1e1e1e;
+   padding: 80px;
+   border-radius: 12px;
+   margin-top: 80px;
+   display: inline-block;
+}
+
+/* TODO 5: Estilo del h1
+   - color a tu gusto (ej: #7CFC00 o #4da3ff)
+   - font-size: 36px
+*/
+h1 {
+   color: #7CFC00;
+   font-size: 36px;
+}
+
+/* TODO 6: Estilo del botón
+   - background-color (ej: #3d8bfd)
+   - color: white
+   - border: none
+   - padding: 12px 28px
+   - font-size: 16px
+   - border-radius: 8px
+   - cursor: pointer
+*/
+button {
+   background-color: #3d8bfd;
+   color: white;
+   border: none;
+   padding: 12px 28px;
+   font-size: 16px;
+   border-radius: 8px;
+   cursor: pointer;
+}
+
+/* TODO 7 (opcional): Estado
+   - color gris o verde
+*/
+#estado {
+   color: #7CFC00;
+}
+
+   button:hover {
+     border: 1px solid #ffffff;
+     background-color: #1900ff;
+     transform: scale(1.05);
+   }
