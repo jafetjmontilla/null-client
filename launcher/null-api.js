@@ -13,11 +13,18 @@ function configuracionLocal() {
   }
 }
 
-const local = configuracionLocal();
-const BASE = (process.env.NULL_API_URL || local.url || "https://null.sistemasjaihom.com").replace(/\/$/, "");
-const CLAVE = process.env.NULL_API_KEY || local.key || "";
+function direccion() {
+  const local = configuracionLocal();
+  return (process.env.NULL_API_URL || local.url || "https://null.sistemasjaihom.com").replace(/\/$/, "");
+}
+
+function clave() {
+  const local = configuracionLocal();
+  return process.env.NULL_API_KEY || local.key || "";
+}
 
 async function pedir(ruta, opciones) {
+  const CLAVE = clave();
   if (!CLAVE) {
     const fallo = new Error("Falta la clave de la API en launcher/null-api.local.json.");
     fallo.status = 0;
@@ -32,7 +39,7 @@ async function pedir(ruta, opciones) {
 
   let respuesta;
   try {
-    respuesta = await fetch(BASE + ruta, opcionesConClave);
+    respuesta = await fetch(direccion() + ruta, opcionesConClave);
   } catch (error) {
     const fallo = new Error("No se pudo contactar la API de Null.");
     fallo.status = 0;
