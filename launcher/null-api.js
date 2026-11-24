@@ -1,15 +1,40 @@
-// Cliente HTTP de la API local. Solo lo usa el proceso principal.
+// Cliente HTTP de la API. Solo lo usa el proceso principal.
+// La clave vive en null-api.local.json, que no se sube al repositorio.
 
-const BASE = (process.env.NULL_API_URL || "http://204.168.187.112/null-api").replace(/\/$/, "");
+const fs = require("fs");
+const path = require("path");
+
+function configuracionLocal() {
+  try {
+    const archivo = path.join(__dirname, "null-api.local.json");
+    return JSON.parse(fs.readFileSync(archivo, "utf8"));
+  } catch (error) {
+    return {};
+  }
+}
+
+const local = configuracionLocal();
+const BASE = (process.env.NULL_API_URL || local.url || "https://null.sistemasjaihom.com").replace(/\/$/, "");
+const CLAVE = process.env.NULL_API_KEY || local.key || "";
 
 async function pedir(ruta, opciones) {
+  if (!CLAVE) {
+    const fallo = new Error("Falta la clave de la API en launcher/null-api.local.json.");
+    fallo.status = 0;
+    throw fallo;
+  }
+
+  const opcionesConClave = Object.assign({}, opciones);
+  opcionesConClave.headers = Object.assign(
+    { "x-null-key": CLAVE },
+    opciones && opciones.headers
+  );
+
   let respuesta;
   try {
-    respuesta = await fetch(BASE + ruta, opciones);
+    respuesta = await fetch(BASE + ruta, opcionesConClave);
   } catch (error) {
-    const fallo = new Error(
-      "No se pudo contactar la API de Null."
-    );
+    const fallo = new Error("No se pudo contactar la API de Null.");
     fallo.status = 0;
     throw fallo;
   }

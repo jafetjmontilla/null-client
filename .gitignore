@@ -20,6 +20,7 @@ Untitled
 # Secretos / entorno
 .env
 .env.*
+launcher/null-api.local.json
 *.pem
 credentials.json
 
