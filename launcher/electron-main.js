@@ -4,7 +4,7 @@
 // El HTML/CSS/JS (index.html) se ve DENTRO de esa ventana.
 // ============================================
 
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, shell } = require("electron");
 const path = require("path");
 const {
   lanzarMinecraft,
@@ -13,6 +13,7 @@ const {
 } = require("./minecraft-launch");
 const { leerAjustes, escribirAjustes } = require("./launcher-store");
 const { revisarServidores } = require("./server-tracker");
+const api = require("./null-api");
 
 let ventanaPrincipal = null;
 
@@ -60,12 +61,81 @@ ipcMain.on("ventana:cerrar", function () {
   }
 });
 
+function ajustesParaUi(datos) {
+  return {
+    lastServers: datos.lastServers,
+    lastVersion: datos.lastVersion,
+  };
+}
+
+function perfilGuardado(datos) {
+  if (!datos.session) {
+    return null;
+  }
+  return { name: datos.session.name, uuid: datos.session.uuid };
+}
+
+function enlaceMicrosoftPermitido(url) {
+  try {
+    const destino = new URL(url);
+    const host = destino.hostname;
+    return (
+      destino.protocol === "https:" &&
+      (host === "microsoft.com" ||
+        host.endsWith(".microsoft.com") ||
+        host === "live.com" ||
+        host.endsWith(".live.com"))
+    );
+  } catch (error) {
+    return false;
+  }
+}
+
 // ---------- Minecraft ----------
 
 ipcMain.handle("juego:lanzar", async function (_evento, opciones) {
+  const pedido = opciones || {};
+  const ajustes = leerAjustes();
+  if (!ajustes.session || !ajustes.session.token) {
+    return { ok: false, needsLogin: true, error: "Inicia sesión con Microsoft." };
+  }
+
+  let authorization;
   try {
-    const resultado = await lanzarMinecraft(ventanaPrincipal, opciones || {});
-    return { ok: true, root: resultado.root };
+    const remoto = await api.authorizationDeLanzamiento(ajustes.session.token);
+    authorization = remoto.authorization;
+  } catch (error) {
+    if (error && error.status === 401) {
+      escribirAjustes({ session: null });
+      return {
+        ok: false,
+        needsLogin: true,
+        error: error.message || "La sesión caducó. Vuelve a entrar.",
+      };
+    }
+    return {
+      ok: false,
+      error: error && error.message ? error.message : String(error),
+    };
+  }
+
+  try {
+    const resultado = await lanzarMinecraft(ventanaPrincipal, {
+      versionId: pedido.versionId,
+      serverAddress: pedido.serverAddress,
+      serverPort: pedido.serverPort,
+      authorization: authorization,
+    });
+    if (authorization.name && authorization.uuid) {
+      escribirAjustes({
+        session: {
+          token: ajustes.session.token,
+          name: authorization.name,
+          uuid: authorization.uuid,
+        },
+      });
+    }
+    return { ok: true, root: resultado.root, name: authorization.name };
   } catch (error) {
     return {
       ok: false,
@@ -86,7 +156,7 @@ ipcMain.handle("juego:estado", async function () {
 // ---------- Ajustes (servidores + versión) ----------
 
 ipcMain.handle("ajustes:cargar", async function () {
-  return leerAjustes();
+  return ajustesParaUi(leerAjustes());
 });
 
 ipcMain.handle("ajustes:guardar", async function (_evento, parcial) {
@@ -109,6 +179,89 @@ ipcMain.handle("servidores:revisar", async function () {
       current: null,
     };
   }
+});
+
+// ---------- Sesión premium (Microsoft → Minecraft) ----------
+
+ipcMain.handle("sesion:actual", async function () {
+  const ajustes = leerAjustes();
+  if (!ajustes.session || !ajustes.session.token) {
+    return { ok: true, profile: null };
+  }
+  try {
+    const perfil = await api.perfil(ajustes.session.token);
+    escribirAjustes({
+      session: {
+        token: ajustes.session.token,
+        name: perfil.name,
+        uuid: perfil.uuid,
+      },
+    });
+    return { ok: true, profile: { name: perfil.name, uuid: perfil.uuid } };
+  } catch (error) {
+    if (error && error.status === 401) {
+      escribirAjustes({ session: null });
+      return { ok: true, profile: null };
+    }
+    // La API no responde: seguimos mostrando la cuenta guardada.
+    return { ok: true, profile: perfilGuardado(ajustes), offline: true };
+  }
+});
+
+ipcMain.handle("sesion:iniciar", async function () {
+  try {
+    const inicio = await api.iniciarMicrosoft();
+    return { ok: true, ...inicio };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error && error.message ? error.message : String(error),
+    };
+  }
+});
+
+ipcMain.handle("sesion:consultar", async function (_evento, loginId) {
+  try {
+    const estado = await api.consultarMicrosoft(loginId);
+    if (estado.status === "ready" && estado.sessionToken && estado.profile) {
+      escribirAjustes({
+        session: {
+          token: estado.sessionToken,
+          name: estado.profile.name,
+          uuid: estado.profile.uuid,
+        },
+      });
+      return { ok: true, status: "ready", profile: estado.profile };
+    }
+    return { ok: true, status: estado.status, error: estado.error || null };
+  } catch (error) {
+    return {
+      ok: false,
+      status: "error",
+      error: error && error.message ? error.message : String(error),
+    };
+  }
+});
+
+ipcMain.handle("sesion:cerrar", async function () {
+  const ajustes = leerAjustes();
+  if (ajustes.session && ajustes.session.token) {
+    try {
+      await api.cerrarSesion(ajustes.session.token);
+    } catch (error) {
+      /* Si la API está caída, igual borramos la sesión local. */
+    }
+  }
+  escribirAjustes({ session: null });
+  return { ok: true };
+});
+
+ipcMain.handle("enlace:abrir", async function (_evento, url) {
+  if (!enlaceMicrosoftPermitido(url)) {
+    return { ok: false };
+  }
+  await shell.openExternal(url);
+  return { ok: true };
 });
 
 app.whenReady().then(crearVentana);

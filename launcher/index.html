@@ -130,16 +130,16 @@
             <button type="button" class="account" id="cuentaBtn">
               <span class="avatar">
                 <!-- ASSET: assets/avatar.png -->
-                <img class="head-img" src="assets/avatar.png" alt="Avatar" onerror="this.classList.add('missing')" />
+                <img class="head-img" id="avatarJugador" src="assets/avatar.png" alt="Avatar" onerror="this.classList.add('missing')" />
                 <span class="head-fallback" aria-hidden="true"></span>
-                <i class="dot online"></i>
+                <i class="dot offline" id="puntoCuenta"></i>
               </span>
               <span class="account-copy">
                 <span class="who">
-                  <span id="nombreJugador">MrPerff</span>
-                  <span class="seal" title="Null+">+</span>
+                  <span id="nombreJugador">Sign in</span>
+                  <span class="seal hidden" id="selloCuenta" title="Premium">+</span>
                 </span>
-                <span class="plan">Null+ · Microsoft</span>
+                <span class="plan" id="planJugador">Microsoft account</span>
               </span>
               <svg class="ico"><use href="#i-updown" /></svg>
             </button>
@@ -326,6 +326,33 @@
             </div>
           </div>
         </aside>
+      </div>
+    </div>
+
+    <div class="login-layer hidden" id="loginLayer">
+      <div class="login-card" role="dialog" aria-labelledby="loginTitulo">
+        <h2 id="loginTitulo">Cuenta premium</h2>
+        <p class="login-lead" id="loginLead">
+          Entra con la cuenta de Microsoft que tiene Minecraft Java.
+        </p>
+
+        <div id="loginIdle">
+          <button type="button" class="login-go" id="loginStart">Continuar con Microsoft</button>
+        </div>
+
+        <div id="loginCode" class="hidden">
+          <p class="login-lead">Abre el enlace e introduce este código:</p>
+          <p class="login-code" id="loginUserCode">----</p>
+          <button type="button" class="login-go" id="loginOpen">Abrir microsoft.com/link</button>
+          <p class="login-status" id="loginStatus">Esperando a que confirmes…</p>
+        </div>
+
+        <p class="login-error hidden" id="loginError"></p>
+
+        <div class="login-row">
+          <button type="button" class="login-text" id="loginClose">Cerrar</button>
+          <button type="button" class="login-text hidden" id="loginSalir">Cerrar sesión</button>
+        </div>
       </div>
     </div>
 

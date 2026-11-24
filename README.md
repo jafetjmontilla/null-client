@@ -5,7 +5,7 @@ Cliente / launcher de Minecraft estilo Lunar, hecho mientras aprendemos JavaScri
 ## Versión 0.1 — ¿De qué trata?
 
 La **0.1** es la primera versión usable del **launcher de escritorio con Electron**.
-Ya abre una ventana fija de Windows y puede **lanzar Minecraft** (vanilla, modo offline).
+Ya abre una ventana fija de Windows, inicia sesión con una cuenta premium (Microsoft) y puede **lanzar Minecraft** online.
 
 ### Qué incluye la 0.1
 
@@ -13,7 +13,7 @@ Ya abre una ventana fija de Windows y puede **lanzar Minecraft** (vanilla, modo 
 - Marca **Null Client** + logo
 - Selector de versiones (Fabric 1.21.11, 1.19.2, PvP 1.8.9) con última versión recordada
 - Hero que cambia de imagen según la versión (fade + difuminado)
-- Botón **PLAY / STOP** real (lanza y cierra el proceso del juego)
+- Botón **PLAY / STOP** real (lanza y cierra el proceso del juego, con la sesión premium)
 - Descarga del juego a `%AppData%\.nullclient`
 - **Last Servers Played** detectados desde el juego (log + `servers.dat` + iconos), poll cada 15 s
 - Panel de amigos (maqueta)
@@ -22,12 +22,13 @@ Ya abre una ventana fija de Windows y puede **lanzar Minecraft** (vanilla, modo 
 
 ### Qué viene después (ideas)
 
-- Login Microsoft (online real)
 - Fabric / mods de verdad
 - Perfiles, cosméticos, ajustes de RAM/Java en la UI
 - Unir directo al server desde Last Servers sin bugs de instancia abierta
 
 ## Cómo abrir el launcher
+
+El login premium lo resuelve la API de Null, que no va en este repositorio. Tiene que estar en marcha en `http://127.0.0.1:48787`.
 
 En una terminal, dentro de `launcher/`:
 
@@ -36,13 +37,16 @@ npm install
 npm start
 ```
 
-También puedes abrir `launcher/index.html` en el navegador (solo UI; no lanza el juego).
+Pulsa la cuenta abajo a la izquierda, entra con Microsoft (código en [microsoft.com/link](https://www.microsoft.com/link)) y luego PLAY. La cuenta tiene que tener Minecraft Java. La contraseña no pasa por la API: Microsoft la pide en su página.
+
+También puedes abrir `launcher/index.html` en el navegador (solo UI; no lanza el juego ni inicia sesión).
 
 ## Estructura
 
 | Carpeta / archivo | Contenido |
 |-------------------|-----------|
 | `launcher/` | App Electron (HTML, CSS, JS, main, preload) |
-| `launcher/minecraft-launch.js` | Lanza Minecraft con MCLC |
+| `launcher/minecraft-launch.js` | Lanza Minecraft con MCLC, en online |
+| `launcher/null-api.js` | Pide el login premium a la API de Null |
 | `launcher/server-tracker.js` | Detecta últimos servers jugados |
 | `aprender/` | Apuntes y ejercicios del aprendizaje |

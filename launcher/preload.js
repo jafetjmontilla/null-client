@@ -37,6 +37,22 @@ contextBridge.exposeInMainWorld("nullClient", {
     return ipcRenderer.invoke("servidores:revisar");
   },
 
+  sesionActual: function () {
+    return ipcRenderer.invoke("sesion:actual");
+  },
+  iniciarSesion: function () {
+    return ipcRenderer.invoke("sesion:iniciar");
+  },
+  consultarSesion: function (loginId) {
+    return ipcRenderer.invoke("sesion:consultar", loginId);
+  },
+  cerrarSesion: function () {
+    return ipcRenderer.invoke("sesion:cerrar");
+  },
+  abrirEnlace: function (url) {
+    return ipcRenderer.invoke("enlace:abrir", url);
+  },
+
   // Eventos que manda el main → UI
   onProgresoJuego: function (callback) {
     ipcRenderer.on("juego:progreso", function (_e, datos) {

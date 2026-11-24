@@ -14,6 +14,7 @@ function leerAjustes() {
   const vacio = {
     lastServers: null,
     lastVersion: null,
+    session: null,
   };
 
   try {
@@ -23,9 +24,19 @@ function leerAjustes() {
     }
     const raw = fs.readFileSync(archivo, "utf8");
     const data = JSON.parse(raw);
+    const session =
+      data.session && data.session.token && data.session.uuid && data.session.name
+        ? {
+            token: data.session.token,
+            uuid: data.session.uuid,
+            name: data.session.name,
+            loginId: data.session.loginId || null,
+          }
+        : null;
     return {
       lastServers: Array.isArray(data.lastServers) ? data.lastServers : null,
       lastVersion: data.lastVersion || null,
+      session: session,
     };
   } catch (error) {
     console.error("[NullClient] No se pudieron leer ajustes:", error);
@@ -41,6 +52,7 @@ function escribirAjustes(parcial) {
         parcial.lastServers !== undefined ? parcial.lastServers : actual.lastServers,
       lastVersion:
         parcial.lastVersion !== undefined ? parcial.lastVersion : actual.lastVersion,
+      session: parcial.session !== undefined ? parcial.session : actual.session,
     };
     const archivo = rutaAjustes();
     const carpeta = path.dirname(archivo);

@@ -5,7 +5,7 @@
 
 const path = require("path");
 const { app } = require("electron");
-const { Client, Authenticator } = require("minecraft-launcher-core");
+const { Client } = require("minecraft-launcher-core");
 
 let launcher = null;
 let procesoMinecraft = null;
@@ -24,11 +24,14 @@ function avisar(ventana, canal, datos) {
 /**
  * Descarga (si hace falta) y arranca la versión pedida.
  * @param {BrowserWindow} ventana
- * @param {{ versionId: string, jugador: string }} opciones
+ * @param {{ versionId: string, authorization: object }} opciones
  */
 async function lanzarMinecraft(ventana, opciones) {
   const versionId = opciones.versionId;
-  const jugador = (opciones.jugador || "Player").trim() || "Player";
+  const authorization = opciones.authorization;
+  if (!authorization || !authorization.access_token || !authorization.name || !authorization.uuid) {
+    throw new Error("Inicia sesión con Microsoft antes de jugar.");
+  }
 
   if (procesoMinecraft && !procesoMinecraft.killed) {
     throw new Error("Minecraft is already running");
@@ -67,11 +70,10 @@ async function lanzarMinecraft(ventana, opciones) {
   });
 
   avisar(ventana, "juego:progreso", { pct: 2, texto: "Preparing…" });
-
-  // Sin password = modo offline (singleplayer / servers offline)
-  const authorization = await Authenticator.getAuth(jugador);
-
-  avisar(ventana, "juego:progreso", { pct: 8, texto: "Launching " + versionId + "…" });
+  avisar(ventana, "juego:progreso", {
+    pct: 8,
+    texto: "Launching " + versionId + " as " + authorization.name + "…",
+  });
 
   const opts = {
     authorization: authorization,

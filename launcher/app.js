@@ -574,10 +574,177 @@ document.addEventListener("click", function () {
 pintarMenuVersiones();
 cargarEstadoGuardado();
 
+// ---------- 3c) Cuenta premium ----------
+
+const capaLogin = document.getElementById("loginLayer");
+const loginIdle = document.getElementById("loginIdle");
+const loginCode = document.getElementById("loginCode");
+const loginError = document.getElementById("loginError");
+const loginUserCode = document.getElementById("loginUserCode");
+const loginStatus = document.getElementById("loginStatus");
+const loginSalir = document.getElementById("loginSalir");
+const puntoCuenta = document.getElementById("puntoCuenta");
+const planJugador = document.getElementById("planJugador");
+const selloCuenta = document.getElementById("selloCuenta");
+const avatarJugador = document.getElementById("avatarJugador");
+let loginPoll = null;
+let enlaceMicrosoft = "https://www.microsoft.com/link";
+let cuentaActual = null;
+
+function pararPollLogin() {
+  if (loginPoll) {
+    clearInterval(loginPoll);
+    loginPoll = null;
+  }
+}
+
+function mostrarErrorLogin(texto) {
+  if (!loginError) {
+    return;
+  }
+  loginError.textContent = texto;
+  loginError.classList.remove("hidden");
+}
+
+function pintarCuenta(perfil) {
+  cuentaActual = perfil;
+  if (nombreJugadorEl) {
+    nombreJugadorEl.textContent = perfil ? perfil.name : "Sign in";
+  }
+  if (planJugador) {
+    planJugador.textContent = perfil ? "Premium · Microsoft" : "Microsoft account";
+  }
+  if (selloCuenta) {
+    selloCuenta.classList.toggle("hidden", !perfil);
+  }
+  if (puntoCuenta) {
+    puntoCuenta.classList.toggle("online", !!perfil);
+    puntoCuenta.classList.toggle("offline", !perfil);
+  }
+  if (avatarJugador) {
+    if (perfil && perfil.uuid) {
+      avatarJugador.classList.remove("missing");
+      avatarJugador.src =
+        "https://crafatar.com/avatars/" + perfil.uuid + "?size=32&overlay";
+    } else {
+      avatarJugador.src = "assets/avatar.png";
+    }
+  }
+  if (loginSalir) {
+    loginSalir.classList.toggle("hidden", !perfil);
+  }
+}
+
+function abrirLogin() {
+  if (!capaLogin) {
+    return;
+  }
+  pararPollLogin();
+  if (loginError) {
+    loginError.classList.add("hidden");
+  }
+  if (loginCode) {
+    loginCode.classList.add("hidden");
+  }
+  if (loginIdle) {
+    loginIdle.classList.remove("hidden");
+  }
+  capaLogin.classList.remove("hidden");
+}
+
+function cerrarLogin() {
+  pararPollLogin();
+  if (capaLogin) {
+    capaLogin.classList.add("hidden");
+  }
+}
+
+async function cargarSesion() {
+  if (!apiElectron || !apiElectron.sesionActual) {
+    pintarCuenta(null);
+    return;
+  }
+  try {
+    const estado = await apiElectron.sesionActual();
+    pintarCuenta(estado && estado.profile ? estado.profile : null);
+  } catch (error) {
+    pintarCuenta(null);
+  }
+}
+
+document.getElementById("cuentaBtn").addEventListener("click", function () {
+  abrirLogin();
+});
+
+document.getElementById("loginClose").addEventListener("click", function () {
+  cerrarLogin();
+});
+
+document.getElementById("loginStart").addEventListener("click", async function () {
+  if (!apiElectron || !apiElectron.iniciarSesion) {
+    mostrarErrorLogin("Abre el launcher con npm start para iniciar sesión.");
+    return;
+  }
+  if (loginError) {
+    loginError.classList.add("hidden");
+  }
+  loginStatus.textContent = "Pidiendo código a Microsoft…";
+  try {
+    const inicio = await apiElectron.iniciarSesion();
+    if (!inicio || !inicio.ok) {
+      throw new Error((inicio && inicio.error) || "No se pudo empezar el login.");
+    }
+    enlaceMicrosoft = inicio.verificationUri || enlaceMicrosoft;
+    loginUserCode.textContent = inicio.userCode || "----";
+    loginIdle.classList.add("hidden");
+    loginCode.classList.remove("hidden");
+    loginStatus.textContent = "Esperando a que confirmes…";
+    pararPollLogin();
+    loginPoll = setInterval(async function () {
+      try {
+        const consulta = await apiElectron.consultarSesion(inicio.loginId);
+        if (!consulta || consulta.status === "pending") {
+          return;
+        }
+        pararPollLogin();
+        if (consulta.status === "ready" && consulta.profile) {
+          pintarCuenta(consulta.profile);
+          cerrarLogin();
+          estado.textContent = "Signed in as " + consulta.profile.name;
+          return;
+        }
+        mostrarErrorLogin(consulta.error || "No se pudo iniciar sesión.");
+      } catch (error) {
+        pararPollLogin();
+        mostrarErrorLogin(error.message || "No se pudo consultar el login.");
+      }
+    }, 2000);
+  } catch (error) {
+    mostrarErrorLogin(error.message || "No se pudo empezar el login.");
+  }
+});
+
+document.getElementById("loginOpen").addEventListener("click", function () {
+  if (apiElectron && apiElectron.abrirEnlace) {
+    apiElectron.abrirEnlace(enlaceMicrosoft);
+  } else {
+    window.open(enlaceMicrosoft, "_blank", "noopener");
+  }
+});
+
+document.getElementById("loginSalir").addEventListener("click", async function () {
+  if (apiElectron && apiElectron.cerrarSesion) {
+    await apiElectron.cerrarSesion();
+  }
+  pintarCuenta(null);
+  cerrarLogin();
+});
+
 // ---------- 4) Play / Stop ----------
 
 const nombreJugadorEl = document.getElementById("nombreJugador");
 const apiElectron = window.nullClient;
+cargarSesion();
 
 botonPlay.addEventListener("click", async function () {
   if (lanzando) {
@@ -628,10 +795,24 @@ function marcarListoTrasCerrar() {
 }
 
 async function lanzarJuegoReal() {
-  // Sin Electron: solo demo visual (navegador)
+  // Sin Electron: el login premium vive en la app de escritorio
   if (!apiElectron || !apiElectron.esElectron || !apiElectron.lanzarJuego) {
-    simularLanzamiento();
+    abrirLogin();
     return;
+  }
+
+  if (apiElectron.sesionActual) {
+    try {
+      const sesion = await apiElectron.sesionActual();
+      if (!sesion || !sesion.profile) {
+        abrirLogin();
+        estado.textContent = "Sign in with Microsoft to play";
+        return;
+      }
+    } catch (error) {
+      abrirLogin();
+      return;
+    }
   }
 
   // Evitar segundo launch si Minecraft ya corre
@@ -674,6 +855,15 @@ async function lanzarJuegoReal() {
     const resultado = await apiElectron.lanzarJuego(optsLanzamiento);
 
     if (!resultado || !resultado.ok) {
+      if (resultado && resultado.needsLogin) {
+        lanzando = false;
+        botonPlay.classList.remove("is-busy");
+        barraLanzamiento.classList.add("hidden");
+        ponerModoPlay();
+        estado.textContent = resultado.error || "Sign in with Microsoft to play";
+        abrirLogin();
+        return;
+      }
       throw new Error((resultado && resultado.error) || "Launch failed");
     }
 
