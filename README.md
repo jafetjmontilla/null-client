@@ -28,7 +28,7 @@ Ya abre una ventana fija de Windows, inicia sesión con una cuenta premium (Micr
 
 ## Cómo abrir el launcher
 
-El login premium lo resuelve la API de Null, que no va en este repositorio. Tiene que estar en marcha en `http://127.0.0.1:48787`.
+El login premium lo resuelve la API de Null, que no va en este repositorio. El launcher habla con `http://204.168.187.112/null-api`.
 
 En una terminal, dentro de `launcher/`:
 

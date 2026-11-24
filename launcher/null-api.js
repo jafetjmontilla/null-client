@@ -1,6 +1,6 @@
 // Cliente HTTP de la API local. Solo lo usa el proceso principal.
 
-const BASE = (process.env.NULL_API_URL || "http://127.0.0.1:48787").replace(/\/$/, "");
+const BASE = (process.env.NULL_API_URL || "http://204.168.187.112/null-api").replace(/\/$/, "");
 
 async function pedir(ruta, opciones) {
   let respuesta;
@@ -8,7 +8,7 @@ async function pedir(ruta, opciones) {
     respuesta = await fetch(BASE + ruta, opciones);
   } catch (error) {
     const fallo = new Error(
-      "La API no está en marcha. En la carpeta api ejecuta npm install y npm start."
+      "No se pudo contactar la API de Null."
     );
     fallo.status = 0;
     throw fallo;
