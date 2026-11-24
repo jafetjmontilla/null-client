@@ -1,5 +1,6 @@
 # Dependencias
 node_modules/
+launcher/node_modules/
 
 # Sistema
 .DS_Store

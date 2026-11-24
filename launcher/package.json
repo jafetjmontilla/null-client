@@ -1,0 +1,20 @@
+{
+  "name": "null-client",
+  "version": "0.1.0",
+  "description": "Null Client — launcher de Minecraft",
+  "main": "electron-main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron ."
+  },
+  "author": "MrPerff",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "electron": "^39.2.3"
+  },
+  "dependencies": {
+    "minecraft-launcher-core": "^3.18.2",
+    "minecraft-server-util": "^5.4.4",
+    "prismarine-nbt": "^2.8.0"
+  }
+}

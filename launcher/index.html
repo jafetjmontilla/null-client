@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=BBH+Bogle&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700;900&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
@@ -52,14 +52,21 @@
       <symbol id="i-min" viewBox="0 0 16 16">
         <path d="M3 8h10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
       </symbol>
-      <symbol id="i-max" viewBox="0 0 16 16">
-        <rect x="3.2" y="3.2" width="9.6" height="9.6" fill="none" stroke="currentColor" stroke-width="1.4" />
-      </symbol>
       <symbol id="i-play" viewBox="0 0 16 16">
         <path d="M6 3.5v9L12.6 8Z" fill="currentColor" />
       </symbol>
+      <symbol id="i-stop" viewBox="0 0 16 16">
+        <rect x="4" y="4" width="8" height="8" rx="1" fill="currentColor" />
+      </symbol>
       <symbol id="i-plus" viewBox="0 0 16 16">
         <path d="M8 3.2v9.6M3.2 8h9.6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+      </symbol>
+      <symbol id="i-chat" viewBox="0 0 16 16">
+        <path d="M3.2 3.2h9.6v7.2H8.2L5.2 13V10.4H3.2Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-user-plus" viewBox="0 0 16 16">
+        <circle cx="6.2" cy="5.2" r="2.2" fill="none" stroke="currentColor" stroke-width="1.4" />
+        <path d="M2.2 12.5c.4-2.2 2-3.4 4-3.4s3.6 1.2 4 3.4M11.2 5.5v4M9.2 7.5h4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
       </symbol>
     </svg>
 
@@ -75,49 +82,29 @@
         <div class="status-center">
           <span class="status-item">
             <i class="dot online pulse"></i>
-            <span>Servidores en línea</span>
+            <span>Servers online</span>
           </span>
           <span class="sep">·</span>
-          <span class="mono">— jugando</span>
+          <span class="mono">— playing</span>
         </div>
 
         <div class="win-controls">
-          <button type="button" class="win-btn" title="Minimizar" data-win="min">
+          <button type="button" class="win-btn" title="Minimize" data-win="min">
             <svg class="ico"><use href="#i-min" /></svg>
           </button>
-          <button type="button" class="win-btn" title="Maximizar" data-win="max">
-            <svg class="ico"><use href="#i-max" /></svg>
-          </button>
-          <button type="button" class="win-btn close" title="Cerrar" data-win="close">
+          <button type="button" class="win-btn close" title="Close" data-win="close">
             <svg class="ico"><use href="#i-x" /></svg>
           </button>
         </div>
       </header>
 
       <div class="workspace">
-        <!-- ========== SIDEBAR IZQUIERDA ========== -->
+        <!-- ========== LEFT SIDEBAR ========== -->
         <aside class="sidebar">
-          <button type="button" class="account" id="cuentaBtn">
-            <span class="avatar">
-              <!-- ASSET: assets/avatar.png -->
-              <img class="head-img" src="assets/avatar.png" alt="Avatar" onerror="this.classList.add('missing')" />
-              <span class="head-fallback" aria-hidden="true"></span>
-              <i class="dot online"></i>
-            </span>
-            <span class="account-copy">
-              <span class="who">
-                <span id="nombreJugador">MrPerff</span>
-                <span class="seal" title="Null+">+</span>
-              </span>
-              <span class="plan">Null+ · Microsoft</span>
-            </span>
-            <svg class="ico"><use href="#i-updown" /></svg>
-          </button>
-
           <nav class="nav" id="nav">
             <button type="button" class="nav-btn is-active" data-tab="inicio">
               <svg class="ico"><use href="#i-home" /></svg>
-              <span class="label">Inicio</span>
+              <span class="label">Home</span>
             </button>
             <button type="button" class="nav-btn" data-tab="mods">
               <svg class="ico"><use href="#i-mods" /></svg>
@@ -125,29 +112,37 @@
             </button>
             <button type="button" class="nav-btn" data-tab="perfiles">
               <svg class="ico"><use href="#i-profiles" /></svg>
-              <span class="label">Perfiles</span>
+              <span class="label">Profiles</span>
             </button>
             <button type="button" class="nav-btn" data-tab="cosmeticos">
               <svg class="ico"><use href="#i-cape" /></svg>
-              <span class="label">Cosméticos</span>
-              <span class="nav-extra nuevo">nuevo</span>
+              <span class="label">Cosmetics</span>
+              <span class="nav-extra nuevo">new</span>
             </button>
             <button type="button" class="nav-btn" data-tab="ajustes">
               <svg class="ico"><use href="#i-sliders" /></svg>
-              <span class="label">Ajustes</span>
+              <span class="label">Settings</span>
             </button>
           </nav>
 
+          <!-- Perfil del jugador (antes estaba arriba; Memoria eliminada) -->
           <div class="side-foot">
-            <div class="ram-top">
-              <span>Memoria</span>
-              <b>4.0 / 16 GB</b>
-            </div>
-            <div class="ticks" aria-hidden="true">
-              <i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i>
-              <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-            </div>
-            <div class="java">Java 21 · 64-bit</div>
+            <button type="button" class="account" id="cuentaBtn">
+              <span class="avatar">
+                <!-- ASSET: assets/avatar.png -->
+                <img class="head-img" src="assets/avatar.png" alt="Avatar" onerror="this.classList.add('missing')" />
+                <span class="head-fallback" aria-hidden="true"></span>
+                <i class="dot online"></i>
+              </span>
+              <span class="account-copy">
+                <span class="who">
+                  <span id="nombreJugador">MrPerff</span>
+                  <span class="seal" title="Null+">+</span>
+                </span>
+                <span class="plan">Null+ · Microsoft</span>
+              </span>
+              <svg class="ico"><use href="#i-updown" /></svg>
+            </button>
           </div>
         </aside>
 
@@ -177,17 +172,17 @@
             <div class="hero-copy">
               <p class="kicker">
                 <i class="dot online"></i>
-                <span id="estado">Selecciona una versión</span>
+                <span id="estado">Select a version</span>
               </p>
               <h1 id="tituloVersion">Null Client</h1>
-              <p class="hero-meta" id="metaVersion">Elige un perfil para jugar</p>
+              <p class="hero-meta" id="metaVersion">Pick a profile to play</p>
             </div>
 
             <div class="hero-actions">
               <div class="action-row">
                 <div class="version-wrap">
                   <button type="button" class="version-btn" id="versionBtn">
-                    <span id="versionLabel">Elige versión</span>
+                    <span id="versionLabel">Choose version</span>
                     <svg class="ico caret"><use href="#i-chevron" /></svg>
                   </button>
 
@@ -197,14 +192,14 @@
 
                 <button type="button" class="play" id="botonPlay">
                   <span class="play-shine" aria-hidden="true"></span>
-                  <svg class="ico"><use href="#i-play" /></svg>
+                  <svg class="ico"><use id="playIconUse" href="#i-play" /></svg>
                   <span id="playLabel">PLAY</span>
                 </button>
               </div>
 
               <div class="launch hidden" id="barraLanzamiento">
                 <div class="launch-top">
-                  <span id="launchTexto">Preparando…</span>
+                  <span id="launchTexto">Preparing…</span>
                   <span id="launchPct">0%</span>
                 </div>
                 <div class="launch-track">
@@ -219,49 +214,74 @@
             <div class="view view-fade" id="vistaInicio">
               <section class="recientes">
                 <div class="sec-head">
-                  <h2>Últimos servidores</h2>
-                  <span class="subhead">Los 4 más recientes</span>
+                  <h2>Last Servers Played</h2>
+                  <hr class="server-line">
                 </div>
 
                 <!-- Se llena con JS (app.js) en grilla 2x2 -->
                 <div class="servers-grid" id="listaServidores"></div>
+              </section>
+
+              <!-- Últimas noticias del launcher -->
+              <section class="noticias" id="seccionNoticias">
+                <div class="sec-head">
+                  <h2>Latest News</h2>
+                  <hr class="server-line" />
+                </div>
+                <div class="news-list" id="listaNoticias">
+                  <!-- JS rellena las noticias -->
+                </div>
               </section>
             </div>
 
             <!-- Vistas placeholder (las llenamos después) -->
             <div class="view view-fade hidden" id="vistaMods">
               <h2>Mods</h2>
-              <p class="subhead">Más adelante. Los toggles de gameplay van dentro del juego.</p>
+              <p class="subhead">Coming soon. Gameplay toggles live in-game.</p>
             </div>
             <div class="view view-fade hidden" id="vistaPerfiles">
-              <h2>Perfiles</h2>
-              <p class="subhead">Aquí guardaremos versiones y configs por perfil.</p>
+              <h2>Profiles</h2>
+              <p class="subhead">Versions and configs per profile will live here.</p>
             </div>
             <div class="view view-fade hidden" id="vistaCosmeticos">
-              <h2>Cosméticos</h2>
-              <p class="subhead">Capas y skins — cuando tengamos renders.</p>
+              <h2>Cosmetics</h2>
+              <p class="subhead">Capes and skins — once we have renders.</p>
             </div>
             <div class="view view-fade hidden" id="vistaAjustes">
-              <h2>Ajustes</h2>
-              <p class="subhead">RAM, Java, carpeta del juego, etc.</p>
+              <h2>Settings</h2>
+              <p class="subhead">RAM, Java, game folder, and more.</p>
             </div>
           </div>
         </main>
 
         <!-- ========== AMIGOS ========== -->
         <aside class="friends">
-          <div class="pane-head">
-            <h2>Friends</h2>
-            <button type="button" class="btn sm">Add</button>
+          <div class="friends-top">
+            <div class="friends-head">
+              <div class="friends-title">
+                <h2>Friends</h2>
+                <span class="friends-online">(1 online)</span>
+              </div>
+              <div class="friends-actions">
+                <button type="button" class="icon-btn" title="Chat">
+                  <svg class="ico"><use href="#i-chat" /></svg>
+                </button>
+                <button type="button" class="icon-btn" title="Add friend">
+                  <svg class="ico"><use href="#i-user-plus" /></svg>
+                </button>
+                <button type="button" class="icon-btn" title="Settings">
+                  <svg class="ico"><use href="#i-sliders" /></svg>
+                </button>
+              </div>
+            </div>
+
+            <label class="search">
+              <svg class="ico"><use href="#i-search" /></svg>
+              <input type="text" placeholder="Search friends..." autocomplete="off" />
+            </label>
           </div>
 
-          <label class="search">
-            <svg class="ico"><use href="#i-search" /></svg>
-            <input type="text" placeholder="Buscar" autocomplete="off" />
-          </label>
-
           <div class="friends-list">
-            <p class="group-label">En línea</p>
 
             <div class="friend card-lift">
               <!-- ASSET: assets/friend-1.png -->
@@ -284,14 +304,13 @@
               <i class="dot online"></i>
             </div>
 
-            <p class="group-label">Desconectados</p>
 
             <div class="friend is-offline">
               <img class="friend-avatar" src="assets/friend-3.png" alt="" onerror="this.classList.add('missing')" />
               <span class="friend-fallback" aria-hidden="true"></span>
               <div class="friend-text">
                 <b>AetherBoy</b>
-                <small>Hace 2 horas</small>
+                <small>2 hours ago</small>
               </div>
               <i class="dot offline"></i>
             </div>
@@ -301,16 +320,10 @@
               <span class="friend-fallback" aria-hidden="true"></span>
               <div class="friend-text">
                 <b>DrakoYT</b>
-                <small>Ayer</small>
+                <small>Yesterday</small>
               </div>
               <i class="dot offline"></i>
             </div>
-          </div>
-
-          <div class="me-status">
-            <i class="dot online"></i>
-            <input type="text" value="En el launcher" maxlength="26" />
-            <button type="button" class="btn sm">Estado</button>
           </div>
         </aside>
       </div>

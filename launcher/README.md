@@ -1,26 +1,41 @@
 # Null Client — Launcher
 
-Aprendemos **construyendo**. La UI actual sigue el layout de la referencia principal
-(3 columnas + hero) y toma animaciones de la segunda referencia.
+Learn by **building**. The current UI follows the main reference layout
+(3 columns + hero) and runs as a **desktop app with Electron**.
 
-## Abrir
+## Open with Electron (recommended)
 
-Abre `index.html` en el navegador (doble clic o Live Preview).
+In a terminal, inside this `launcher` folder:
 
-## Archivos
+```powershell
+npm install
+npm start
+```
 
-| Archivo | Qué es |
-|---------|--------|
-| `index.html` | Estructura de la ventana |
-| `styles.css` | Colores, layout, animaciones |
-| `app.js` | Versiones, Play, pestañas |
-| `assets/` | Imágenes / vídeo que tú aportas |
+A Windows window opens (no system frame: we use our own titlebar).
 
-## Sin módulos in-game
+## Open in the browser (still works)
 
-La grilla de toggles (FPS Boost, etc.) **no** está en el launcher:
-eso se configura dentro del juego.
+Double-click `index.html` or open it in Chrome/Edge.
+The min/close buttons are visual-only there.
+
+## Important files
+
+| File | What it is |
+|------|------------|
+| `index.html` | UI structure |
+| `styles.css` | Colors, layout, animations |
+| `app.js` | UI logic (versions, Play, etc.) |
+| `electron-main.js` | Creates the Electron window |
+| `preload.js` | Safe bridge HTML ↔ Electron |
+| `assets/` | Images / logo / heroes |
+
+## Electron idea (simple)
+
+1. `electron-main.js` opens a window
+2. That window loads `index.html`
+3. Your titlebar buttons talk to Electron via `preload.js`
 
 ## Assets
 
-Lee `assets/README.md` y suelta ahí logo, hero, avatar, iconos de servers, etc.
+Read `assets/README.md` and drop logo, hero, avatar, server icons, etc. there.
